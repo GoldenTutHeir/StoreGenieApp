@@ -1,18 +1,24 @@
 package com.example.storeGenie.POJO;
 
-import jakarta.persistence.*;
-import lombok.Data;
+import javax.persistence.*;
+import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
+import java.io.Serializable;
+
 @NamedQuery(name = "User.findByEmailId", query = "select u from User u where u.email=:email")
 
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Data
 @Entity
-@DynamicInsert
 @DynamicUpdate
+@DynamicInsert
 @Table(name = "user")
-public class User {
+public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

@@ -1,5 +1,7 @@
 package com.example.storeGenie.serviceImpl;
 
+import com.example.storeGenie.JWT.CustomerUserDetailsService;
+import com.example.storeGenie.JWT.JwtFilter;
 import com.example.storeGenie.POJO.User;
 import com.example.storeGenie.constants.CafeConstants;
 import com.example.storeGenie.dao.UserDao;
@@ -9,6 +11,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -55,5 +60,39 @@ public class UserServiceImpl implements UserService {
         user.setStatus("false");
         user.setRole("user");
         return user;
+    }
+    @Autowired
+    AuthenticationManager authenticationManager;
+    @Autowired
+    com.example.storeGenie.JWT.JwtUtil jwtUtil;
+
+    @Autowired
+    JwtFilter jwtFilter;
+    @Autowired
+    CustomerUserDetailsService customerUserDetailsService;
+
+//    @Autowired
+//    EmailUtil emailUtil;
+
+    @Override
+    public ResponseEntity<String> login(Map<String, String> requestMap) {
+        log.info("Inside login {}", requestMap);
+        try {
+            Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(requestMap.get("email"), requestMap.get("password")));
+            if (auth.isAuthenticated()) {
+                if (customerUserDetailsService.getUserDatails().getStatus().equalsIgnoreCase("true")) {
+                    return new ResponseEntity<String>("{\"token\":\"" + jwtUtil.generateToken(
+                            customerUserDetailsService.getUserDatails().getEmail(), customerUserDetailsService.getUserDatails().getRole()) + "\"}",
+                            HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<String>("{\"message\":\"" + "Wait for Admin Approval." + "\"}",
+                            HttpStatus.BAD_REQUEST);
+                }
+            }
+        } catch (Exception ex) {
+            log.error("{}", ex);
+        }
+        return new ResponseEntity<String>("{\"message\":\"" + "Bad Credentials." + "\"}",
+                HttpStatus.BAD_REQUEST);
     }
 }
