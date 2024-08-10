@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
-public class jwtUtil {
+public class JwtUtil {
     private String secret = "btechdays";
 
     public String extractUsername(String token){
