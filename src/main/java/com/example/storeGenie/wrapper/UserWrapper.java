@@ -5,9 +5,12 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class UserWrapper {
-    private  Integer id;
+
+//    UserWrapper user = new com.example.storeGenie.wrapper.UserWrapper(1, "abc", "abc@gmail.com", "6354", "false");
+
+    private Integer id;
     private String name;
-    private String  email;
+    private String email;
     private String contactNumber;
     private String status;
 
