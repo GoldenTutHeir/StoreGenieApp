@@ -7,6 +7,7 @@ import com.example.storeGenie.constants.CafeConstants;
 import com.example.storeGenie.dao.UserDao;
 import com.example.storeGenie.service.UserService;
 import com.example.storeGenie.utils.CafeUtils;
+import com.example.storeGenie.wrapper.UserWrapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -95,4 +98,21 @@ public class UserServiceImpl implements UserService {
         return new ResponseEntity<String>("{\"message\":\"" + "Bad Credentials." + "\"}",
                 HttpStatus.BAD_REQUEST);
     }
+
+    @Override
+    public ResponseEntity<List<UserWrapper>> getAllUser() {
+        try {
+            if(jwtFilter.isAdmin()) {
+                log.info("Admin has all the roles");
+                return new ResponseEntity<>(userDao.getAllUser(), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(new ArrayList<>(), HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return new ResponseEntity<>(new ArrayList<>(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+
 }
